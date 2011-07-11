@@ -8,6 +8,7 @@ gem 'rails', '3.1.0.rc4'
 gem 'thin'
 
 group :production do
+  gem 'therubyracer-heroku', '0.8.1.pre3'
   gem 'pg'
 end
 
