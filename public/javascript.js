@@ -49,7 +49,913 @@
   }
   return this.require.define;
 }).call(this)({
-"spine.ajax": function(exports, require, module) {(function() {
+"app": function(exports, require, module) {(function() {
+  var App, Client, Clients, Invoice, Invoices, Login, Logins, Opp, Opps, Product, Products, Quote, Quotes;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  require("spine");
+  require("spine.route");
+  require("spine.tmpl");
+  require("spine.manager");
+  require("spine.local");
+  Client = require("models/client");
+  Clients = require("controllers/clients");
+  Quote = require("models/quote");
+  Quotes = require("controllers/quotes");
+  Invoice = require("models/invoice");
+  Invoices = require("controllers/invoices");
+  Opp = require("models/opp");
+  Opps = require("controllers/opps");
+  Product = require("models/product");
+  Products = require("controllers/products");
+  Login = require("models/login");
+  Logins = require("controllers/logins");
+  App = (function() {
+    __extends(App, Spine.Controller);
+    App.prototype.elements = {
+      "#client": "clientsEl",
+      "#product": "productsEl",
+      "#quotes": "quotesEl",
+      "#opps": "oppsEl",
+      "#invoices": "invoicesEl",
+      "#login": "loginEl"
+    };
+    App.prototype.set_button = function(id) {
+      $("#header .buttons li").removeClass("active");
+      return $("#" + id).addClass("active");
+    };
+    function App() {
+      App.__super__.constructor.apply(this, arguments);
+      this.clients = new Clients({
+        el: this.clientsEl
+      });
+      this.products = new Products({
+        el: this.productsEl
+      });
+      this.login = new Logins({
+        el: this.loginEl
+      });
+      this.quotes = new Quotes({
+        el: this.quotesEl
+      });
+      this.opps = new Opps({
+        el: this.oppsEl
+      });
+      this.invoices = new Invoices({
+        el: this.invoicesEl
+      });
+      new Spine.Manager(this.clients, this.products);
+      new Spine.Manager(this.login, this.quotes, this.invoices, this.opps);
+      $("#header img").hide();
+      this.routes({
+        "/login/": function() {
+          var item, _i, _len, _ref, _results;
+          this.set_button("no_btn");
+          this.login.activate();
+          _ref = [this.clients, this.products, this.quotes, this.invoices, this.opps];
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            item = _ref[_i];
+            _results.push(item.deactivate());
+          }
+          return _results;
+        },
+        "/view/cart/": function() {
+          this.set_button("btn_cart");
+          this.quotes.active();
+          this.quotes.render();
+          if (Client.selected !== null) {
+            return Product.trigger("show", "");
+          } else {
+            return this.clients.active();
+          }
+        },
+        "/view/history/": function() {
+          this.set_button("btn_history");
+          this.invoices.active();
+          this.clients.active();
+          return this.invoices.render();
+        },
+        "/view/pending/": function() {
+          this.set_button("btn_pending");
+          this.opps.active();
+          this.clients.active();
+          return this.opps.render();
+        }
+      });
+      Spine.Route.setup();
+      this.navigate("/login", "");
+    }
+    return App;
+  })();
+  module.exports = App;
+}).call(this);
+}, "controllers/clients": function(exports, require, module) {(function() {
+  var Client, Clients;
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Client = require("models/client");
+  Clients = (function() {
+    __extends(Clients, Spine.Controller);
+    Clients.prototype.events = {
+      "click ul": "select_client",
+      "change input": "render"
+    };
+    function Clients() {
+      this.show = __bind(this.show, this);
+      this.render = __bind(this.render, this);      Clients.__super__.constructor.apply(this, arguments);
+      Client.bind("refresh change", this.render);
+      Client.bind("show", this.show);
+      Client.bind("load_from_server", this.load_from_server);
+    }
+    Clients.prototype.render = function() {
+      var clients, frag;
+      frag = this.el.find('input').val();
+      clients = Client.all();
+      return this.el.find('.search_items').html(require("views/clients/list")(clients));
+    };
+    Clients.prototype.change = function() {
+      return alert("test");
+    };
+    Clients.prototype.select_client = function(event) {
+      var element;
+      element = $(event.target);
+      Client.selected = element.item();
+      return Client.trigger("on_select_client");
+    };
+    Clients.prototype.show = function() {
+      Client.selected = null;
+      return this.active();
+    };
+    Clients.prototype.load_from_server = function(data) {
+      var item, _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = data.length; _i < _len; _i++) {
+        item = data[_i];
+        _results.push(Client.create({
+          name: item.Name.toLowerCase(),
+          id: item.Id
+        }));
+      }
+      return _results;
+    };
+    return Clients;
+  })();
+  module.exports = Clients;
+}).call(this);
+}, "controllers/invoices": function(exports, require, module) {(function() {
+  var Client, Invoice, Invoices;
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Invoice = require("models/invoice");
+  Client = require("models/client");
+  Invoices = (function() {
+    __extends(Invoices, Spine.Controller);
+    Invoices.prototype.elements = {
+      ".selectedItems": "selectedItems"
+    };
+    Invoices.prototype.events = {
+      "click .quote>.liButton": "remove_quote",
+      "click .panel_header h6": "change_client"
+    };
+    function Invoices() {
+      this.on_select_client = __bind(this.on_select_client, this);
+      this.render = __bind(this.render, this);      Invoices.__super__.constructor.apply(this, arguments);
+      Invoice.bind("refresh change", this.render);
+      Client.bind("on_select_client", this.on_select_client);
+      Invoice.bind("load_from_server", this.load_from_server);
+      this.selectedItems.html("<li>No hay Productos Seleccionados</li>");
+    }
+    Invoices.prototype.render = function() {
+      var list;
+      if (this.isActive()) {
+        list = Invoice.filter(Client.selected);
+        if (list.length > 0) {
+          this.selectedItems.html(require("views/invoices/list")(list));
+        } else {
+          this.selectedItems.html("<li>No hay pedidos recientes </li>");
+        }
+        return this.set_header_name();
+      }
+    };
+    Invoices.prototype.set_header_name = function() {
+      if (Client.selected) {
+        return this.el.find(".panel_header span").html(Client.selected.name);
+      } else {
+        return this.el.find(".panel_header span").html("Todos los Clientes");
+      }
+    };
+    Invoices.prototype.on_select_client = function() {
+      return this.render();
+    };
+    Invoices.prototype.change_client = function() {
+      Client.trigger("show", "");
+      return this.render();
+    };
+    Invoices.prototype.load_from_server = function(data) {
+      var item, _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = data.length; _i < _len; _i++) {
+        item = data[_i];
+        _results.push(Invoice.create({
+          clientId: item.Cliente__r.Id,
+          clientName: item.Cliente__r.Name.toLowerCase(),
+          id: item.id,
+          productName: item.Producto__r.Name.toLowerCase(),
+          productId: item.Producto__r.Id,
+          price: item.Precio__c,
+          stage: item.Estado__c,
+          discount: item.Descuento__c,
+          amount: item.Cantidad__c
+        }));
+      }
+      return _results;
+    };
+    return Invoices;
+  })();
+  module.exports = Invoices;
+}).call(this);
+}, "controllers/logins": function(exports, require, module) {(function() {
+  var Client, Invoice, Login, Logins, Product;
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Login = require("models/login");
+  Client = require("models/client");
+  Product = require("models/product");
+  Invoice = require("models/invoice");
+  Logins = (function() {
+    __extends(Logins, Spine.Controller);
+    Logins.prototype.elements = {
+      "#txt_user_email": "email",
+      "#txt_user_password": "password",
+      "#txt_user_token": "token"
+    };
+    Logins.prototype.events = {
+      "click .panel_footer .button": "login"
+    };
+    function Logins() {
+      this.on_login_error = __bind(this.on_login_error, this);
+      this.render = __bind(this.render, this);      var last;
+      Logins.__super__.constructor.apply(this, arguments);
+      Login.fetch();
+      Login.bind("refresh change", this.render);
+      last = Login.last();
+      if (last) {
+        this.email.val(last.id);
+        this.password.val(last.password);
+        this.token.val(last.token);
+      }
+    }
+    Logins.prototype.render = function() {};
+    Logins.prototype.login_offline = function() {
+      var login;
+      login = Login.auth(this.email.val(), this.password.val());
+      if (login !== false) {
+        Client.fetch();
+        Product.fetch();
+        Invoice.fetch();
+        return this.navigate("/view/cart", "");
+      }
+    };
+    Logins.prototype.login = function() {
+      var query;
+      query = 'email=' + this.email.val() + '&password=' + this.password.val() + '&token=' + this.token.val() + '&test=true';
+      $("#header img").show();
+      return $.ajax({
+        url: "http://rodcopedidos.heroku.com/login_and_load",
+        timeout: 10000,
+        type: "GET",
+        data: query,
+        context: "documento.body",
+        success: __bind(function(data) {
+          return this.on_login_sucess(data);
+        }, this),
+        error: __bind(function(jqXHR, textStatus, errorThrown) {
+          return this.on_login_error(jqXHR, textStatus, errorThrown);
+        }, this)
+      });
+    };
+    Logins.prototype.on_login_sucess = function(data) {
+      var clients, invoices, item, products, _i, _len;
+      $("#header img").hide();
+      Login.create({
+        id: this.email.val(),
+        password: this.password.val(),
+        token: this.token.val()
+      });
+      data = JSON.parse(data);
+      products = [];
+      clients = [];
+      invoices = [];
+      for (_i = 0, _len = data.length; _i < _len; _i++) {
+        item = data[_i];
+        if (item.type === "Producto__c") {
+          products.push(item);
+        } else if (item.type === "Cliente__c") {
+          clients.push(item);
+        } else if (item.type === "Oportunidad__c") {
+          invoices.push(item);
+        }
+      }
+      Client.trigger("load_from_server", clients);
+      Product.trigger("load_from_server", products);
+      Invoice.trigger("load_from_server", invoices);
+      return this.navigate("/view/cart", "");
+    };
+    Logins.prototype.on_login_error = function(jqXHR, textStatus, errorThrown) {
+      $("#header img").hide();
+      if (jqXHR.status === 403) {
+        return alert("error ingresando al sistema por usuario y clave equivocado");
+      } else if (textStatus === "timeout") {
+        return alert("error ingresando al sistema o al servidor por problemas de internet");
+      } else {
+        return this.login_offline();
+      }
+    };
+    return Logins;
+  })();
+  module.exports = Logins;
+}).call(this);
+}, "controllers/opps": function(exports, require, module) {(function() {
+  var Client, Invoice, Login, Opp, Opps, Product;
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Opp = require("models/opp");
+  Product = require("models/product");
+  Client = require("models/client");
+  Login = require("models/login");
+  Invoice = require("models/invoice");
+  Opps = (function() {
+    __extends(Opps, Spine.Controller);
+    Opps.prototype.elements = {
+      ".selectedItems": "selectedItems",
+      ".panel_header span": "panel_header",
+      ".panel_footer .value": "total_placeholder"
+    };
+    Opps.prototype.events = {
+      "click .panel_header h6": "change_client",
+      "click .selectedItems": "opp_action",
+      "click .panel_footer .button": "send_all"
+    };
+    function Opps() {
+      this.on_send_success = __bind(this.on_send_success, this);
+      this.send_all = __bind(this.send_all, this);
+      this.on_select_client = __bind(this.on_select_client, this);
+      this.render = __bind(this.render, this);      Opps.__super__.constructor.apply(this, arguments);
+      Opp.fetch();
+      Opp.bind("refresh change", this.render);
+      Client.bind("on_select_client", this.on_select_client);
+      this.selectedItems.html("<li>No hay Pedidos Pendientes</li>");
+      this.render();
+    }
+    Opps.prototype.render = function() {
+      var opps, res;
+      if (this.isActive()) {
+        opps = Opp.filter(Client.selected);
+        res = "<li>No hay opportunidades pendientes</li>";
+        if (opps.length > 0) {
+          res = require("views/opps/list")(opps);
+        }
+        this.selectedItems.html(res);
+        return this.set_header_name();
+      }
+    };
+    Opps.prototype.set_header_name = function() {
+      if (Client.selected) {
+        return this.panel_header.html(Client.selected.name);
+      } else {
+        return this.panel_header.html("Todos los Clientes");
+      }
+    };
+    Opps.prototype.change_client = function() {
+      Client.trigger("show", "");
+      return this.render();
+    };
+    Opps.prototype.on_select_client = function() {
+      if (this.isActive()) {
+        return this.render();
+      }
+    };
+    Opps.prototype.opp_action = function(event) {
+      var element, opp, opps;
+      element = $(event.target);
+      opp = element.item();
+      if ((element.hasClass("liButton")) && (element.attr("data-action") === "remove")) {
+        return opp.destroy();
+      } else if ((element.hasClass("liButton")) && (element.attr("data-action") === "send")) {
+        opps = [];
+        opps.push(opp);
+        return this.send_opps(opps);
+      }
+    };
+    Opps.prototype.send_all = function(event) {
+      return this.send_opps(Opp.filter(Client.selected));
+    };
+    Opps.prototype.send_opps = function(opps) {
+      var opp, oppArr, query, user, _i, _len;
+      $("#header img").show();
+      user = Login.last();
+      oppArr = [];
+      for (_i = 0, _len = opps.length; _i < _len; _i++) {
+        opp = opps[_i];
+        oppArr.push(opp.to_apex());
+      }
+      query = 'test=true' + '&email=' + user.id + '&password=' + user.password + '&token=' + user.token + '&oportunidades=' + JSON.stringify(oppArr);
+      return $.ajax({
+        url: "http://rodcopedidos.heroku.com/saveOpportunities",
+        timeout: 10000,
+        type: "POST",
+        data: query,
+        context: "document.body",
+        success: __bind(function(data) {
+          return this.on_send_success(data, opps);
+        }, this),
+        error: __bind(function(jqXHR, textStatus, errorThrown) {
+          return this.on_send_srror(jqXHR, textStatus, errorThrown);
+        }, this)
+      });
+    };
+    Opps.prototype.on_send_success = function(data, originalItems) {
+      var index, opp, result, results, _i, _len, _results;
+      $("#header img").hide();
+      results = JSON.parse(data).createResponse.result;
+      if (results.success === "true") {
+        opp = originalItems[0];
+        return this.opp_to_invoice(opp, results.id);
+      } else {
+        index = 0;
+        _results = [];
+        for (_i = 0, _len = results.length; _i < _len; _i++) {
+          result = results[_i];
+          opp = originalItems[index];
+          this.opp_to_invoice(opp, result.id);
+          _results.push(index++);
+        }
+        return _results;
+      }
+    };
+    Opps.prototype.on_send_error = function(jqXHR, textStatus, errorThrown) {
+      $("#header img").hide();
+      return alert.show("Error enviando el pedido al servidor " + errorThrown + " " + textStatus);
+    };
+    Opps.prototype.opp_to_invoice = function(opp, id) {
+      Invoice.from_opp(opp, id);
+      return opp.destroy();
+    };
+    return Opps;
+  })();
+  module.exports = Opps;
+}).call(this);
+}, "controllers/products": function(exports, require, module) {(function() {
+  var Client, Product, Products;
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Product = require("models/product");
+  Client = require("models/client");
+  Products = (function() {
+    __extends(Products, Spine.Controller);
+    Products.prototype.events = {
+      "click li": "select_product",
+      "change #txt_search_product": "render"
+    };
+    function Products() {
+      this.show = __bind(this.show, this);
+      this.render = __bind(this.render, this);      Products.__super__.constructor.apply(this, arguments);
+      Product.bind("refresh change", this.render);
+      Product.bind("show", this.show);
+      Product.bind("load_from_server", this.load_from_server);
+    }
+    Products.prototype.render = function() {
+      var list, query;
+      query = this.el.find('input').val();
+      list = Product.all();
+      return this.el.find('.search_items').html(require("views/products/list")(list));
+    };
+    Products.prototype.select_product = function(event) {
+      var element;
+      element = $(event.target);
+      return Product.trigger("on_select_product", element.item());
+    };
+    Products.prototype.show = function() {
+      return this.active();
+    };
+    Products.prototype.load_from_server = function(data) {
+      var item, _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = data.length; _i < _len; _i++) {
+        item = data[_i];
+        _results.push(Product.create({
+          name: item.Name.toLowerCase(),
+          id: item.Id,
+          discount: item.DescuentoMinimo__c,
+          price: item.PrecioMinimo__c,
+          tax: item.Impuesto__c,
+          inventory: item.InventarioActual__c,
+          maxDiscount: item.DescuentoMaximo__c
+        }));
+      }
+      return _results;
+    };
+    return Products;
+  })();
+  module.exports = Products;
+}).call(this);
+}, "controllers/quotes": function(exports, require, module) {(function() {
+  var Client, Opp, Product, Quote, Quotes;
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Quote = require("models/quote");
+  Opp = require("models/opp");
+  Product = require("models/product");
+  Client = require("models/client");
+  Quotes = (function() {
+    __extends(Quotes, Spine.Controller);
+    Quotes.prototype.elements = {
+      ".selectedItems": "selectedItems",
+      ".panel_header span": "panel_header",
+      ".panel_footer .value": "total_placeholder",
+      "input": "txt_observation"
+    };
+    Quotes.prototype.events = {
+      "change #txt_amount": "change_amount",
+      "change #txt_discount": "change_discount",
+      "click .selectedItems": "remove_quote",
+      "click .panel_header h6": "change_client",
+      "click .panel_footer .button": "save_quotes"
+    };
+    function Quotes() {
+      this.on_select_product = __bind(this.on_select_product, this);
+      this.on_select_client = __bind(this.on_select_client, this);
+      this.render = __bind(this.render, this);      Quotes.__super__.constructor.apply(this, arguments);
+      Quote.bind("refresh change", this.render);
+      Client.bind("on_select_client", this.on_select_client);
+      Product.bind("on_select_product", this.on_select_product);
+      this.render();
+    }
+    Quotes.prototype.render = function() {
+      var quotes, res;
+      if (this.isActive()) {
+        quotes = Quote.get_quotes(Client.selected);
+        res = "<li>No hay productos seleccionados</li>";
+        if (quotes.length > 0) {
+          res = require("views/quotes/list")(quotes);
+        }
+        this.selectedItems.html(res);
+        this.total_placeholder.html(Quote.quote_total);
+        return this.set_header_name();
+      }
+    };
+    Quotes.prototype.set_header_name = function() {
+      if (Client.selected) {
+        return this.panel_header.html(Client.selected.name);
+      } else {
+        return this.panel_header.html("Escoja un cliente");
+      }
+    };
+    Quotes.prototype.change_client = function() {
+      Client.trigger("show", "");
+      return this.render();
+    };
+    Quotes.prototype.on_select_client = function() {
+      if (this.isActive()) {
+        Product.trigger("show", "");
+        return this.render();
+      }
+    };
+    Quotes.prototype.on_select_product = function(product) {
+      if (this.isActive()) {
+        return Quote.add_or_create(product, 1);
+      }
+    };
+    Quotes.prototype.change_amount = function(event) {
+      var element, quote, tempVal;
+      element = $(event.target);
+      quote = element.item();
+      if (quote) {
+        tempVal = parseInt(element.val());
+        if (tempVal !== NaN) {
+          quote.amount = tempVal;
+          return quote.save();
+        } else {
+          return element.val(quote.amount);
+        }
+      }
+    };
+    Quotes.prototype.change_discount = function(event) {
+      var element, quote, tempVal;
+      element = $(event.target);
+      if (quote) {
+        quote = element.item();
+        tempVal = parseInt(element.val());
+        if (tempVal !== NaN) {
+          quote.discount = tempVal;
+          return quote.save();
+        } else {
+          return element.val(quote.amount);
+        }
+      }
+    };
+    Quotes.prototype.remove_quote = function(event) {
+      var element, quote;
+      element = $(event.target);
+      quote = element.item();
+      if (element.hasClass("liButton")) {
+        return quote.destroy();
+      } else if (element.hasClass("liInput") === false && quote.amount > 1) {
+        quote.amount -= 1;
+        return quote.save();
+      }
+    };
+    Quotes.prototype.save_quotes = function(event) {
+      var client, item, _i, _len, _ref, _results;
+      client = Client.selected;
+      if (client) {
+        _ref = Quote.all();
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          item = _ref[_i];
+          Opp.create({
+            observation: this.txt_observation,
+            clientId: client.id,
+            clientName: client.name,
+            productName: item.productName,
+            productId: item.productId,
+            price: item.price,
+            discount: item.discount,
+            amount: item.amount
+          });
+          _results.push(item.destroy());
+        }
+        return _results;
+      }
+    };
+    return Quotes;
+  })();
+  module.exports = Quotes;
+}).call(this);
+}, "models/client": function(exports, require, module) {(function() {
+  var Client;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Client = (function() {
+    __extends(Client, Spine.Model);
+    function Client() {
+      Client.__super__.constructor.apply(this, arguments);
+    }
+    Client.configure("Client", "name");
+    Client.selected = null;
+    Client.filter = function(query) {
+      return this.select(function(client) {
+        return client.name.indexOf(query) > -1;
+      });
+    };
+    return Client;
+  })();
+  module.exports = Client;
+  Client.extend(Spine.Model.Local);
+}).call(this);
+}, "models/invoice": function(exports, require, module) {(function() {
+  var Invoice;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Invoice = (function() {
+    __extends(Invoice, Spine.Model);
+    function Invoice() {
+      Invoice.__super__.constructor.apply(this, arguments);
+    }
+    Invoice.configure("Quote", "clientId", "clientName", "productId", "productName", "amount", "price", "discount", "stage");
+    Invoice.filter = function(client) {
+      if (client === null) {
+        return Invoice.all();
+      } else {
+        return this.select(function(invoice) {
+          return invoice.clientId === client.id;
+        });
+      }
+    };
+    Invoice.from_opp = function(opp, id) {
+      var o;
+      o = opp.attributes();
+      o.id = id;
+      return Invoice.create(o);
+    };
+    Invoice.prototype.total = function() {
+      return this.price * this.amount;
+    };
+    return Invoice;
+  })();
+  module.exports = Invoice;
+  Invoice.extend(Spine.Model.Local);
+}).call(this);
+}, "models/login": function(exports, require, module) {(function() {
+  var Login;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Login = (function() {
+    __extends(Login, Spine.Model);
+    function Login() {
+      Login.__super__.constructor.apply(this, arguments);
+    }
+    Login.configure("Login", "password", "token");
+    Login.auth = function(email, password) {
+      var ret;
+      ret = null;
+      Login.each(function(login) {
+        if (login.id === email && login.password === password) {
+          return ret = login;
+        }
+      });
+      return ret;
+    };
+    Login.isLogin = false;
+    return Login;
+  })();
+  module.exports = Login;
+  Login.extend(Spine.Model.Local);
+}).call(this);
+}, "models/opp": function(exports, require, module) {(function() {
+  var Opp;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Opp = (function() {
+    __extends(Opp, Spine.Model);
+    function Opp() {
+      Opp.__super__.constructor.apply(this, arguments);
+    }
+    Opp.configure("Opp", "clientId", "clientName", "productId", "productName", "amount", "price", "discount", "stage");
+    Opp.filter = function(client) {
+      if (client === null) {
+        return Opp.all();
+      } else {
+        return this.select(function(opp) {
+          return opp.clientId === client.id;
+        });
+      }
+    };
+    Opp.prototype.total = function() {
+      return this.price * this.amount;
+    };
+    Opp.prototype.to_apex = function() {
+      var obj;
+      obj = ["type", "Oportunidad__c", "cliente__c", this.clientId, "producto__c", this.productId, "cantidad__c", this.amount, "descuento__c", this.discount, "precio__c", this.price, "estado__c", "nuevo"];
+      return JSON.stringify(obj);
+    };
+    return Opp;
+  })();
+  module.exports = Opp;
+  Opp.extend(Spine.Model.Local);
+}).call(this);
+}, "models/product": function(exports, require, module) {(function() {
+  var Product;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Product = (function() {
+    __extends(Product, Spine.Model);
+    function Product() {
+      Product.__super__.constructor.apply(this, arguments);
+    }
+    Product.configure("Product", "name", "price", "discount", "inventory", "maxDiscount", "tax");
+    Product.filter = function(query) {
+      return this.select(function(product) {
+        return product.name.indexOf(query) > -1;
+      });
+    };
+    return Product;
+  })();
+  module.exports = Product;
+  Product.extend(Spine.Model.Local);
+}).call(this);
+}, "models/quote": function(exports, require, module) {(function() {
+  var Quote;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Quote = (function() {
+    __extends(Quote, Spine.Model);
+    function Quote() {
+      Quote.__super__.constructor.apply(this, arguments);
+    }
+    Quote.configure("Quote", "clientId", "clientName", "productId", "productName", "amount", "price", "discount", "stage", "observation");
+    Quote.add_or_create = function(product, amount) {
+      var quote;
+      quote = this.findByAttribute("productId", product.id);
+      if (quote === null) {
+        return Quote.create({
+          productName: product.name,
+          productId: product.id,
+          price: product.price,
+          discount: product.discount,
+          amount: amount,
+          stage: "cart"
+        });
+      } else {
+        quote.amount += amount;
+        return quote.save();
+      }
+    };
+    Quote.quote_total = 0;
+    Quote.get_quotes = function() {
+      var q, quotes, _i, _len;
+      quotes = [];
+      quotes = Quote.all();
+      this.quote_total = 0;
+      for (_i = 0, _len = quotes.length; _i < _len; _i++) {
+        q = quotes[_i];
+        this.quote_total += q.total();
+      }
+      return quotes;
+    };
+    Quote.prototype.total = function() {
+      return this.price * this.amount;
+    };
+    return Quote;
+  })();
+  module.exports = Quote;
+  Quote.extend(Spine.Model.Local);
+}).call(this);
+}, "views/clients/list": function(exports, require, module) {var template = jQuery.template("<li data-id=\"${id}\" class=\"client\">${name}</li>");
+      module.exports = (function(data){ return jQuery.tmpl(template, data); });}, "views/invoices/list": function(exports, require, module) {var template = jQuery.template("<li data-id=\"${productId}\" class=\"invoice\">\n\t\n\t<div class=\"name\">\n\t\t<span class=\"liItem lineSmall\">${clientName}</span>\n\t\t<span class=\"liItem l\">${productName}</span>\t\n\t</div>\n\t\n\t<div class=\"info\">\n\t\t<span class=\"liItem s\">c/<br/>${price}</span>\n\t\t<span class=\"liItem s\">#<br/>${amount}</span>\n\t\t<span class=\"liItem s\">%<br/>${discount}</span>\n\t</div> \t\n\t\n\t \n\t\n</li>");
+      module.exports = (function(data){ return jQuery.tmpl(template, data); });}, "views/opps/list": function(exports, require, module) {var template = jQuery.template("<li data-id=\"${productId}\" class=\"opps\">\n\t\n\t<div class=\"name\">\n\t\t<span class=\"liItem lineSmall\">${clientName}</span>\n\t\t<span class=\"liItem l\">${productName}</span>\t\n\t</div>\n\t\n\t<div class=\"info\">\n\t\t<span class=\"liItem s\">c/<br/>${price}</span>\n\t\t<span class=\"liItem s\">#<br/>${amount}</span>\n\t\t<span class=\"liItem s\">%<br/>${discount}</span>\n\t</div> \t\n\t\n\t<div class=\"buttons\">\n\t\t<span data-action=\"send\" class=\"liButton\"> Enviar </span>\n\t\t<span  data-action=\"remove\"  class=\"liButton\"> Borrar </span>\t\n\t</div>\n\t\n</li> ");
+      module.exports = (function(data){ return jQuery.tmpl(template, data); });}, "views/products/list": function(exports, require, module) {var template = jQuery.template("<li data-id=\"${id}\" class=\"product\">\n\t<div class=\"name\">\n\t<span>${name}</span>\n\t</div>\n\t<div class=\"info\">\n\t<span  class=\" m\"># ${inventory}</span>\n\t<span  class=\" m\">c/ ${price}</span>\n\t<span  class=\" s\">-% ${discount}</span>\n\t<span  class=\" s\">+% ${maxDiscount}</span>\n\t\n\t</div>\n\t\n</li>");
+      module.exports = (function(data){ return jQuery.tmpl(template, data); });}, "views/quotes/list": function(exports, require, module) {var template = jQuery.template("<li data-id=\"${productId}\" class=\"quote\">\n\t<div class=\"name\">\n\t\n\t<span class=\"liItem lineBig\">${productName}</span>\t\n\t</div>\n\t<div class=\"info\">\n\t\n\t<input type=\"text\"  value=\"${amount}\" class=\"liInput\" id=\"txt_amount\"/>\n\t<input type=\"text\"  value=\"${discount}\" class=\"liInput small\" id=\"txt_discount\"/>\n\t<span class=\"liItem\">${price}</span>\n\t\n\t</div>\n\t\n\t<div class=\"buttons\">\n\t\n\t<span class=\"liButton\"> borrar </span>\n\t\n\t</div>\n\t</li>");
+      module.exports = (function(data){ return jQuery.tmpl(template, data); });}, "spine.ajax": function(exports, require, module) {(function() {
   var $, Ajax, Include, Model;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   Spine || (Spine = require("spine"));
