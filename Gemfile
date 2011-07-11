@@ -9,12 +9,17 @@ gem 'sqlite3'
 gem 'thin'
 
 # Asset template engines
+
+gem 'haml'
+gem 'compass'
 gem 'sass-rails', "~> 3.1.0.rc"
 gem 'coffee-script'
 gem 'uglifier'
 gem 'stitch-rb'
 
 gem 'jquery-rails'
+
+gem "jasmine"
 
 # Use unicorn as the web server
 # gem 'unicorn'

@@ -1,0 +1,109 @@
+!!!Strict
+%html{ }
+	%head
+		%title Invoice App
+		%meta{'http-equiv'=>"Content-Type", :content=>"text/html; charset=utf-8"}/
+		%meta{'http-equiv'=>"Content-Language", :content=>"en-us"}/
+		%link{:href=>"/stylesheets/compiled/screen.css", :media=>"screen", :rel=>"stylesheet", :type=>"text/css"}/
+		%link{:href=>"/stylesheets/compiled/print.css", :media=>"print", :rel=>"stylesheet", :type=>"text/css"}/
+			
+		/[if IE]
+			%link{:href=>"/stylesheets/compiled/ie.css", :media=>"screen", :rel=>"stylesheet", :type=>"text/css"}/
+		
+		%script{:src => "/javascripts/jquery.js", :type => 'text/javascript', :charset => 'utf-8'}
+		%script{:src => "/javascripts/jquery.tmpl.js", :type => 'text/javascript', :charset => 'utf-8'}
+		%script{:src => "/application.js", :type => 'text/javascript', :charset => 'utf-8'}
+
+		:javascript
+			var exports = this;
+			jQuery(function(){
+				var App = require("app");
+				exports.App = new App({el: $("body")});				
+			})
+
+		%body
+			#wrapper
+				#header
+					.logo
+						%img{:src=>"images/ajax-loader.gif"}
+						Rodco S.A.
+					%ul.buttons
+						%li.button{:id=>"btn_cart"}
+							%a{:href=>"#/view/cart/"} Cart 
+						%li.button{:id=>"btn_pending"}
+							%a{:href=>"#/view/pending/"} Pending
+						%li.button{:id=>"btn_history"}
+							%a{:href=>"#/view/history/"} History
+				#views
+						
+					#sideView
+						#client
+							.list
+								.searchBox
+									%input{:id=> "txt_search_client" , :placeholder => "Search Clients"}
+								%ul.search_items
+							
+						#product
+							.list
+								.searchBox
+									%input{:id=> "txt_search_product" , :placeholder => "Search Products"}
+								%ul.search_items
+					#mainView				
+						#login.panel
+							.panel_header
+								%span Ingreso al Sistema
+							.panel_content
+								%input.login{:id=> "txt_user_email" , :placeholder => "Email"}
+								%input.login{:id=> "txt_user_password" , :placeholder => "Password"}
+								%input.login{:id=> "txt_user_token" , :placeholder => "Token"}
+						
+							.panel_footer
+								.buttons
+									%span.button
+										Ingresar
+				
+						#quotes.panel
+							.panel_header
+								%span Escoja un Cliente
+								%h6 Cambiar Cliente
+							
+							.panel_content
+							
+								%ul.selectedItems.cart
+							
+								%input{:class=>"big_box",:type => "text",:placeholder => "Observacion"}
+							
+							.panel_footer
+								.buttons
+									%span.button{:"data-action" => "save"}
+										Guardar
+								%span.label
+									Total: c/
+						
+								%span.value
+									0.00
+					
+						#opps.panel
+							.panel_header
+								%span Escoja un Cliente
+								%h6 Cambiar Cliente
+	
+							.panel_content
+
+								%ul.selectedItems.pending
+	
+							.panel_footer
+								.buttons
+									%span.button{:"data-action" => "send"}
+										Enviar Todos
+					
+						#invoices.panel
+							.panel_header
+								%span Escoja un Cliente
+								%h6 Cambiar Cliente
+							.panel_content
+
+								%ul.selectedItems.history
+							.panel_footer
+								.buttons
+				#footer

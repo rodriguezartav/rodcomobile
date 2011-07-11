@@ -1,0 +1,52 @@
+$ninesixty-columns: 12
+
+#wrapper 
+	@include grid-container
+	
+	#header
+		overflow: hidden
+		.logo
+			float: left
+			width: 289px
+		.buttons
+			float: left
+			width: 400px
+		
+	#views
+		overflow: hidden
+		+clearfix
+		#sideView
+			float: left
+			border-right: 1px solid $grey
+			
+			height: 500px
+			width: 309px
+			& > *:not(.active)
+				display: none	
+			.list
+		
+		#mainView
+			float: left
+			width: 650px
+			height: 500px
+			.panel_content
+				height: 426px
+				overflow: hidden
+				
+				
+			.panel
+				.selectedItems
+					height: 390px
+					&.cart
+						height: 362px
+					&.pending
+						height: 392px
+					&.history
+						height: 390px
+			& > div:not(.active)
+				display: none
+			.panel
+	
+			
+	#footer
+
