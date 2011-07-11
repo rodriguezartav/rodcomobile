@@ -12,8 +12,13 @@
 		
 		%script{:src => "/javascripts/jquery.js", :type => 'text/javascript', :charset => 'utf-8'}
 		%script{:src => "/javascripts/jquery.tmpl.js", :type => 'text/javascript', :charset => 'utf-8'}
-		%script{:src => "/application.js", :type => 'text/javascript', :charset => 'utf-8'}
-
+		
+		- if Rails.env.production?
+			%script{:src => "/javascripts/bundle/application.js", :type => 'text/javascript', :charset => 'utf-8'}
+		- else
+			%script{:src => "/application.js", :type => 'text/javascript', :charset => 'utf-8'}
+			
+	
 		:javascript
 			var exports = this;
 			jQuery(function(){
