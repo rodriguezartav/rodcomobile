@@ -15,12 +15,13 @@ $ninesixty-class-separator: "_" !default
 =button_style()
   +gradient_bar(#AFB3C0,#5D6E96)
   font-size: 13px
-  padding: 3px
+  padding: 4px
   border: 1px solid #fff	
   color: #fff
   text-align: center
   float: left
   cursor: pointer
+  +border-radius(10px)
   &:hover
     +gradient_bar(#AFB3C0,darken(#5D6E96,20%))
   &.active

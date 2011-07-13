@@ -187,16 +187,22 @@ body {
   -o-box-shadow: inset 0px 5px 10px rgba(255, 255, 255, 0.2);
   box-shadow: inset 0px 5px 10px rgba(255, 255, 255, 0.2);
   font-size: 13px;
-  padding: 3px;
+  padding: 4px;
   border: 1px solid white;
   color: white;
   text-align: center;
   float: left;
   cursor: pointer;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -o-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -khtml-border-radius: 10px;
+  border-radius: 10px;
   float: left;
   margin-right: 10px;
 }
-/* line 24, /users/roberto/Proyectos/invoice/app/stylesheets/_baseGrid.sass */
+/* line 25, /users/roberto/Proyectos/invoice/app/stylesheets/_baseGrid.sass */
 #wrapper #header .buttons li:hover {
   background-color: #afb3c0;
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255, 255, 255, 0.2)), color-stop(30%, rgba(255, 255, 255, 0.1)), color-stop(100%, rgba(255, 255, 255, 0))), -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #364057), color-stop(40%, #495777), color-stop(100%, #364057));
@@ -210,7 +216,7 @@ body {
   -o-box-shadow: inset 0px 5px 10px rgba(255, 255, 255, 0.2);
   box-shadow: inset 0px 5px 10px rgba(255, 255, 255, 0.2);
 }
-/* line 26, /users/roberto/Proyectos/invoice/app/stylesheets/_baseGrid.sass */
+/* line 27, /users/roberto/Proyectos/invoice/app/stylesheets/_baseGrid.sass */
 #wrapper #header .buttons li.active {
   background-color: #afb3c0;
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255, 255, 255, 0.2)), color-stop(30%, rgba(255, 255, 255, 0.1)), color-stop(100%, rgba(255, 255, 255, 0))), -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #000000), color-stop(40%, #14171f), color-stop(100%, #000000));
@@ -445,14 +451,20 @@ body {
   -o-box-shadow: inset 0px 5px 10px rgba(255, 255, 255, 0.2);
   box-shadow: inset 0px 5px 10px rgba(255, 255, 255, 0.2);
   font-size: 13px;
-  padding: 3px;
+  padding: 4px;
   border: 1px solid white;
   color: white;
   text-align: center;
   float: left;
   cursor: pointer;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -o-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -khtml-border-radius: 10px;
+  border-radius: 10px;
 }
-/* line 24, /users/roberto/Proyectos/invoice/app/stylesheets/_baseGrid.sass */
+/* line 25, /users/roberto/Proyectos/invoice/app/stylesheets/_baseGrid.sass */
 #wrapper .panel .selectedItems li .buttons .liButton:hover {
   background-color: #afb3c0;
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255, 255, 255, 0.2)), color-stop(30%, rgba(255, 255, 255, 0.1)), color-stop(100%, rgba(255, 255, 255, 0))), -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #364057), color-stop(40%, #495777), color-stop(100%, #364057));
@@ -466,7 +478,7 @@ body {
   -o-box-shadow: inset 0px 5px 10px rgba(255, 255, 255, 0.2);
   box-shadow: inset 0px 5px 10px rgba(255, 255, 255, 0.2);
 }
-/* line 26, /users/roberto/Proyectos/invoice/app/stylesheets/_baseGrid.sass */
+/* line 27, /users/roberto/Proyectos/invoice/app/stylesheets/_baseGrid.sass */
 #wrapper .panel .selectedItems li .buttons .liButton.active {
   background-color: #afb3c0;
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255, 255, 255, 0.2)), color-stop(30%, rgba(255, 255, 255, 0.1)), color-stop(100%, rgba(255, 255, 255, 0))), -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #000000), color-stop(40%, #14171f), color-stop(100%, #000000));
@@ -564,14 +576,20 @@ body {
   -o-box-shadow: inset 0px 5px 10px rgba(255, 255, 255, 0.2);
   box-shadow: inset 0px 5px 10px rgba(255, 255, 255, 0.2);
   font-size: 13px;
-  padding: 3px;
+  padding: 4px;
   border: 1px solid white;
   color: white;
   text-align: center;
   float: left;
   cursor: pointer;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -o-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -khtml-border-radius: 10px;
+  border-radius: 10px;
 }
-/* line 24, /users/roberto/Proyectos/invoice/app/stylesheets/_baseGrid.sass */
+/* line 25, /users/roberto/Proyectos/invoice/app/stylesheets/_baseGrid.sass */
 #wrapper .panel .panel_footer .buttons .button:hover {
   background-color: #afb3c0;
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255, 255, 255, 0.2)), color-stop(30%, rgba(255, 255, 255, 0.1)), color-stop(100%, rgba(255, 255, 255, 0))), -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #364057), color-stop(40%, #495777), color-stop(100%, #364057));
@@ -585,7 +603,7 @@ body {
   -o-box-shadow: inset 0px 5px 10px rgba(255, 255, 255, 0.2);
   box-shadow: inset 0px 5px 10px rgba(255, 255, 255, 0.2);
 }
-/* line 26, /users/roberto/Proyectos/invoice/app/stylesheets/_baseGrid.sass */
+/* line 27, /users/roberto/Proyectos/invoice/app/stylesheets/_baseGrid.sass */
 #wrapper .panel .panel_footer .buttons .button.active {
   background-color: #afb3c0;
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255, 255, 255, 0.2)), color-stop(30%, rgba(255, 255, 255, 0.1)), color-stop(100%, rgba(255, 255, 255, 0))), -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #000000), color-stop(40%, #14171f), color-stop(100%, #000000));

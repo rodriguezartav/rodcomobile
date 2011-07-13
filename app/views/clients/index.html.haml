@@ -34,11 +34,11 @@
 						Rodco S.A.
 					%ul.buttons
 						%li.button{:id=>"btn_cart"}
-							%a{:href=>"#/view/cart/"} Cart 
+							%a{:href=>"#/view/cart/"} Borrador 
 						%li.button{:id=>"btn_pending"}
-							%a{:href=>"#/view/pending/"} Pending
+							%a{:href=>"#/view/pending/"} Pendientes
 						%li.button{:id=>"btn_history"}
-							%a{:href=>"#/view/history/"} History
+							%a{:href=>"#/view/history/"} Historico
 				#views
 						
 					#sideView
@@ -59,7 +59,7 @@
 								%span Ingreso al Sistema
 							.panel_content
 								%input.login{:id=> "txt_user_email" , :placeholder => "Email"}
-								%input.login{:id=> "txt_user_password" , :placeholder => "Password"}
+								%input.login{:id=> "txt_user_password" , :type => "password" ,:placeholder => "Password"}
 								%input.login{:id=> "txt_user_token" , :placeholder => "Token"}
 						
 							.panel_footer

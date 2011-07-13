@@ -13,8 +13,9 @@ class Clients extends Spine.Controller
 		
 	render: =>
 		frag = @el.find('input').val()
-		clients = Client.all()
-		@el.find('.search_items').html require("views/clients/list")(clients)
+		if frag.length > 0
+			clients = Client.filter(frag)
+			@el.find('.search_items').html require("views/clients/list")(clients)
 	
 	change: ->
 		alert("test")

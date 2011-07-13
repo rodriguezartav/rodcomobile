@@ -90,7 +90,7 @@ class Quotes extends Spine.Controller
 		client =  Client.selected
 		if client
 			for item in Quote.all()
-				Opp.create({ observation: @txt_observation , clientId: client.id, clientName: client.name , productName: item.productName , productId: item.productId , price: item.price , discount: item.discount, amount: item.amount })
+				Opp.create({ observation: @txt_observation.val() , clientId: client.id, clientName: client.name , productName: item.productName , productId: item.productId , price: item.price , discount: item.discount, amount: item.amount })
 				item.destroy()
-				
+			@txt_observation.val("")
 module.exports = Quotes

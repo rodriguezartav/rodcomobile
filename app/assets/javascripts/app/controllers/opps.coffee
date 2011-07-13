@@ -71,7 +71,7 @@ class Opps extends Spine.Controller
 		for opp in opps
 			oppArr.push opp.to_apex()
 
-		query = 'test=true' + '&email=' + user.id + '&password=' + user.password + '&token=' + user.token + '&oportunidades=' + JSON.stringify(oppArr)
+		query = 'email=' + user.id + '&password=' + user.password + '&token=' + user.token + '&oportunidades=' + JSON.stringify(oppArr)
 		
 		$.ajax({
 			url: "http://rodcopedidos.heroku.com/saveOpportunities",
@@ -80,7 +80,7 @@ class Opps extends Spine.Controller
 			data: query ,
 			context: "document.body",
 			success: (data) => @on_send_success(data,opps),
-			error: (jqXHR, textStatus, errorThrown) => @on_send_srror(jqXHR, textStatus, errorThrown)
+			error: (jqXHR, textStatus, errorThrown) => @on_send_error(jqXHR, textStatus, errorThrown)
 		})
 
 	on_send_success: (data , originalItems) =>

@@ -15,8 +15,9 @@ class Products extends Spine.Controller
 
 	render: =>
 		query = @el.find('input').val()
-		list = Product.all()
-		@el.find('.search_items').html require("views/products/list")(list)
+		if query.length > 0
+			list = Product.filter query
+			@el.find('.search_items').html require("views/products/list")(list)
 
 	select_product: (event) ->
 		element = $(event.target)

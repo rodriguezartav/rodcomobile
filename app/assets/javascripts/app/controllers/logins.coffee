@@ -33,10 +33,9 @@ class Logins extends Spine.Controller
 			Product.fetch()
 			Invoice.fetch()
 			@navigate("/view/cart","")
-		
-		
+
 	login: ->
-		query = 'email=' + @email.val() + '&password=' + @password.val() + '&token=' + @token.val() + '&test=true'
+		query = 'email=' + @email.val() + '&password=' + @password.val() + '&token=' + @token.val() #+ '&test=true'
 		
 		$("#header img").show()
 		
@@ -60,12 +59,13 @@ class Logins extends Spine.Controller
 		invoices = []
 		
 		for item in data
-			if item.type == "Producto__c"
-				products.push item
-			else if item.type == "Cliente__c"
-				clients.push item
-			else if item.type == "Oportunidad__c"
-				invoices.push item
+			if item
+				if item.type == "Producto__c"
+					products.push item
+				else if item.type == "Cliente__c"
+					clients.push item
+				else if item.type == "Oportunidad__c"
+					invoices.push item
 			
 		Client.trigger "load_from_server", clients
 		Product.trigger "load_from_server", products
