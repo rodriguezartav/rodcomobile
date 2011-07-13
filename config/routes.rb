@@ -52,6 +52,8 @@ PedidosV3::Application.routes.draw do
   
   resources :clients
   
+  match '/' => "clients#index"
+  
   match '/application.js' => Stitch::Server.new(:paths => ["app/assets/javascripts/app", "app/assets/javascripts/lib"])
 
   # See how all your routes lay out with "rake routes"
