@@ -8,7 +8,7 @@ class Quote extends Spine.Model
 	@add_or_create: (product,amount) ->
 		quote = @findByAttribute("productId",product.id)
 		if quote == null
-			Quote.create({ productName: product.name , productId: product.id , price: product.price , discount: product.discount , amount: amount , stage: "cart",observation:"" })
+			Quote.create({ productName: product.name , productId: product.id , price: product.price , discount: parseInt(product.discount) , amount: amount , stage: "cart",observation:"" })
 		else
 			quote.amount += amount
 			quote.save()

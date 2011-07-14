@@ -59,7 +59,7 @@ class Quotes extends Spine.Controller
 		element = $(event.target)
 		quote = element.item()
 		if quote
-			tempVal = parseInt(element.val())
+			tempVal = parseFloat(element.val())
 			if tempVal != NaN 
 				quote.amount = tempVal
 				quote.save()
@@ -68,8 +68,8 @@ class Quotes extends Spine.Controller
 			
 	change_discount: (event) ->
 		element = $(event.target)
+		quote = element.item()
 		if quote
-			quote = element.item()
 			tempVal = parseInt(element.val())
 			if tempVal != NaN 
 				quote.discount = tempVal
@@ -90,7 +90,9 @@ class Quotes extends Spine.Controller
 		client =  Client.selected
 		if client
 			for item in Quote.all()
-				Opp.create({ observation: @txt_observation.val() , clientId: client.id, clientName: client.name , productName: item.productName , productId: item.productId , price: item.price , discount: item.discount, amount: item.amount })
+				amount = item.amount.toFixed(2)
+				discount = item.discount.toFixed(2)
+				Opp.create({ observation: @txt_observation.val() , clientId: client.id, clientName: client.name , productName: item.productName , productId: item.productId , price: item.price , discount: discount, amount: amount })
 				item.destroy()
 			@txt_observation.val("")
 module.exports = Quotes
