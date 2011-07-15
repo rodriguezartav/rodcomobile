@@ -680,7 +680,7 @@
       element = $(event.target);
       quote = element.item();
       if (quote) {
-        tempVal = parseInt(element.val());
+        tempVal = parseFloat(element.val());
         if (tempVal !== NaN) {
           quote.amount = tempVal;
           return quote.save();
@@ -692,8 +692,8 @@
     Quotes.prototype.change_discount = function(event) {
       var element, quote, tempVal;
       element = $(event.target);
+      quote = element.item();
       if (quote) {
-        quote = element.item();
         tempVal = parseInt(element.val());
         if (tempVal !== NaN) {
           quote.discount = tempVal;
@@ -715,12 +715,14 @@
       }
     };
     Quotes.prototype.save_quotes = function(event) {
-      var client, item, _i, _len, _ref;
+      var amount, client, discount, item, _i, _len, _ref;
       client = Client.selected;
       if (client) {
         _ref = Quote.all();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           item = _ref[_i];
+          amount = item.amount.toFixed(2);
+          discount = item.discount.toFixed(2);
           Opp.create({
             observation: this.txt_observation.val(),
             clientId: client.id,
@@ -728,8 +730,8 @@
             productName: item.productName,
             productId: item.productId,
             price: item.price,
-            discount: item.discount,
-            amount: item.amount
+            discount: discount,
+            amount: amount
           });
           item.destroy();
         }
@@ -742,7 +744,7 @@
 }).call(this);
 }, "models/client": function(exports, require, module) {(function() {
   var Client;
-  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
     ctor.prototype = parent.prototype;
@@ -753,14 +755,29 @@
   Client = (function() {
     __extends(Client, Spine.Model);
     function Client() {
+      this.Client = __bind(this.Client, this);
       Client.__super__.constructor.apply(this, arguments);
     }
     Client.configure("Client", "name");
     Client.selected = null;
+    Client.queryToRegex = function(query) {
+      var str, word, words, _i, _len;
+      str = "";
+      words = query.split(" ");
+      for (_i = 0, _len = words.length; _i < _len; _i++) {
+        word = words[_i];
+        str += word;
+        str += "|";
+      }
+      return str = str.slice(0, -1);
+    };
     Client.filter = function(query) {
-      return this.select(function(client) {
-        return client.name.indexOf(query) > -1;
-      });
+      query = query.toLowerCase();
+      return this.select(__bind(function(client) {
+        var myRegExp;
+        myRegExp = new RegExp(this.queryToRegex(query), 'gi');
+        return client.name.search(myRegExp) > -1;
+      }, this));
     };
     return Client;
   })();
@@ -868,7 +885,7 @@
     };
     Opp.prototype.to_apex = function() {
       var obj;
-      obj = ["type", "Oportunidad__c", "cliente__c", this.clientId, "producto__c", this.productId, "cantidad__c", this.amount, "descuento__c", this.discount, "precio__c", this.price, "estado__c", "Nueva", "observacion__c", this.observation];
+      obj = ["type", "Oportunidad__c", "cliente__c", this.clientId, "producto__c", this.productId, "cantidad__c", this.amount, "descuento__c", this.discount, "precio__c", this.price, "estado__c", "Nueva", "observacion__c", this.observation, "isPedido__c", "true", "isOportunidad__c", "false"];
       return JSON.stringify(obj);
     };
     return Opp;
@@ -878,7 +895,7 @@
 }).call(this);
 }, "models/product": function(exports, require, module) {(function() {
   var Product;
-  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
     ctor.prototype = parent.prototype;
@@ -889,13 +906,28 @@
   Product = (function() {
     __extends(Product, Spine.Model);
     function Product() {
+      this.Product = __bind(this.Product, this);
       Product.__super__.constructor.apply(this, arguments);
     }
     Product.configure("Product", "name", "price", "discount", "inventory", "maxDiscount", "tax");
+    Product.queryToRegex = function(query) {
+      var str, word, words, _i, _len;
+      str = "";
+      words = query.split(" ");
+      for (_i = 0, _len = words.length; _i < _len; _i++) {
+        word = words[_i];
+        str += word;
+        str += "|";
+      }
+      return str = str.slice(0, -1);
+    };
     Product.filter = function(query) {
-      return this.select(function(product) {
-        return product.name.indexOf(query) > -1;
-      });
+      query = query.toLowerCase();
+      return this.select(__bind(function(product) {
+        var myRegExp;
+        myRegExp = new RegExp(this.queryToRegex(query), 'gi');
+        return product.name.search(myRegExp) > -1;
+      }, this));
     };
     return Product;
   })();
@@ -926,7 +958,7 @@
           productName: product.name,
           productId: product.id,
           price: product.price,
-          discount: product.discount,
+          discount: parseInt(product.discount),
           amount: amount,
           stage: "cart",
           observation: ""
