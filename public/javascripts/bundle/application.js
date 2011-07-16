@@ -529,8 +529,11 @@
       }
     };
     Opps.prototype.on_send_error = function(jqXHR, textStatus, errorThrown) {
+      var error;
       $("#header img").hide();
-      return alert.show("Error enviando el pedido al servidor " + errorThrown + " " + textStatus);
+      error = "Error enviando el pedido al servidor " + errorThrown + " " + textStatus;
+      alert(error);
+      return window.sendError(error);
     };
     Opps.prototype.opp_to_invoice = function(opp, id) {
       Invoice.from_opp(opp, id);

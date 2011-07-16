@@ -21,20 +21,22 @@
 	
 		:javascript
 			var exports = this;
-			window.onerror = function(msg, url, line) {
-				var error = 'Line ' + line + ' ' + msg;
-				// Log to your server.
+			
+			window.sendError = function sendError(error){
 				var xhr = new XMLHttpRequest();
 				xhr.open('GET', 'http://rodcopedidos.heroku.com/error?error=' + error, true);
 				xhr.send();
+			}
+			
+			window.onerror = function(msg, url, line) {
+				var error = 'Line ' + line + ' ' + msg;
+				sendError(error);
 			  return true; // false prevents default error handling.
 			};
 			
 			jQuery(function(){
 				var App = require("app");
 				exports.App = new App({el: $("body")});				
-			
-			
 			})
 
 		%body

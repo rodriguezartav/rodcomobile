@@ -99,7 +99,9 @@ class Opps extends Spine.Controller
 
 	on_send_error: (jqXHR, textStatus, errorThrown) ->
 		$("#header img").hide()
-		alert.show("Error enviando el pedido al servidor " + errorThrown + " " + textStatus)
+		error = "Error enviando el pedido al servidor " + errorThrown + " " + textStatus 
+		alert(error);
+		window.sendError(error);
 		
 	opp_to_invoice: (opp,id) ->
 		Invoice.from_opp(opp , id)
