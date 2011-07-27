@@ -50,7 +50,7 @@
   return this.require.define;
 }).call(this)({
 "app": function(exports, require, module) {(function() {
-  var App, Client, Clients, Invoice, Invoices, Login, Logins, Opp, Opps, Product, Products, Quote, Quotes;
+  var App, Chatter, Chatters, Client, Clients, Invoice, Invoices, Login, Logins, Opp, Opps, Product, Products, Quote, Quotes;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -76,6 +76,8 @@
   Products = require("controllers/products");
   Login = require("models/login");
   Logins = require("controllers/logins");
+  Chatter = require("models/chatter");
+  Chatters = require("controllers/chatters");
   App = (function() {
     __extends(App, Spine.Controller);
     App.prototype.elements = {
@@ -84,7 +86,8 @@
       "#quotes": "quotesEl",
       "#opps": "oppsEl",
       "#invoices": "invoicesEl",
-      "#login": "loginEl"
+      "#login": "loginEl",
+      "#chatters": "chattersEl"
     };
     App.prototype.set_button = function(id) {
       $("#header .buttons li").removeClass("active");
@@ -110,8 +113,11 @@
       this.invoices = new Invoices({
         el: this.invoicesEl
       });
+      this.chatters = new Chatters({
+        el: this.chattersEl
+      });
       new Spine.Manager(this.clients, this.products);
-      new Spine.Manager(this.login, this.quotes, this.invoices, this.opps);
+      new Spine.Manager(this.login, this.quotes, this.invoices, this.opps, this.chatters);
       $("#header img").hide();
       this.routes({
         "/login/": function() {
@@ -147,6 +153,10 @@
           this.opps.active();
           this.clients.active();
           return this.opps.render();
+        },
+        "/view/chatter/": function() {
+          this.set_button("btn_chatter");
+          return this.chatters.active();
         }
       });
       Spine.Route.setup();
@@ -155,6 +165,67 @@
     return App;
   })();
   module.exports = App;
+}).call(this);
+}, "controllers/chatters": function(exports, require, module) {(function() {
+  var Chatter, Chatters, Login;
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Login = require("models/login");
+  Chatter = require("models/chatter");
+  Chatters = (function() {
+    __extends(Chatters, Spine.Controller);
+    Chatters.prototype.elements = {
+      "#chatter_post": "body"
+    };
+    Chatters.prototype.events = {
+      "click .button": "send"
+    };
+    function Chatters() {
+      this.on_send_success = __bind(this.on_send_success, this);      Chatters.__super__.constructor.apply(this, arguments);
+    }
+    Chatters.prototype.send = function() {
+      var body, chatterArr, js, query, user;
+      $("#header img").show();
+      user = Login.last();
+      body = this.body.val();
+      chatterArr = ["type", "FeedItem", "ParentId", "0F9A0000000PEvA", "Type", "TextPost", "Body", body];
+      js = JSON.stringify(chatterArr);
+      query = 'email=' + user.id + '&password=' + user.password + '&token=' + user.token + '&oportunidades=' + JSON.stringify([js]);
+      return $.ajax({
+        url: "http://rodcopedidos.heroku.com/saveOpportunities",
+        timeout: 10000,
+        type: "POST",
+        data: query,
+        context: "document.body",
+        success: __bind(function(data) {
+          return this.on_send_success(data, opps);
+        }, this),
+        error: __bind(function(jqXHR, textStatus, errorThrown) {
+          return this.on_send_error(jqXHR, textStatus, errorThrown);
+        }, this)
+      });
+    };
+    Chatters.prototype.on_send_success = function(data, originalItems) {
+      $("#header img").hide();
+      this.body.val("");
+      return alert("Ok enviado" + data);
+    };
+    Chatters.prototype.on_send_error = function(jqXHR, textStatus, errorThrown) {
+      var error;
+      $("#header img").hide();
+      error = "Error enviando el pedido al servidor " + errorThrown + " " + textStatus;
+      alert(error);
+      return window.sendError(error);
+    };
+    return Chatters;
+  })();
+  module.exports = Chatters;
 }).call(this);
 }, "controllers/clients": function(exports, require, module) {(function() {
   var Client, Clients;
@@ -564,7 +635,6 @@
     function Products() {
       this.show = __bind(this.show, this);
       this.render = __bind(this.render, this);      Products.__super__.constructor.apply(this, arguments);
-      Product.bind("refresh change", this.render);
       Product.bind("show", this.show);
       Product.bind("load_from_server", this.load_from_server);
     }
@@ -744,6 +814,31 @@
     return Quotes;
   })();
   module.exports = Quotes;
+}).call(this);
+}, "models/chatter": function(exports, require, module) {(function() {
+  var Chatter;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
+  Chatter = (function() {
+    __extends(Chatter, Spine.Model);
+    function Chatter() {
+      Chatter.__super__.constructor.apply(this, arguments);
+    }
+    Chatter.configure("Chatter", "temp_val");
+    Chatter.to_apex = function(title, body) {
+      var obj;
+      obj = ["type", "CollaborationGroupFeed", "ParentId", "0F9A0000000PEvA", "Type", "TextPost", "Body", body, "Title", title];
+      return JSON.stringify(obj);
+    };
+    return Chatter;
+  })();
+  module.exports = Chatter;
 }).call(this);
 }, "models/client": function(exports, require, module) {(function() {
   var Client;
