@@ -22,6 +22,9 @@ Products = require("controllers/products")
 Login  = require("models/login")
 Logins = require("controllers/logins")
 
+Chatter  = require("models/chatter")
+Chatters = require("controllers/chatters")
+
 class App extends Spine.Controller
 	elements:
 		"#client": "clientsEl",
@@ -30,12 +33,13 @@ class App extends Spine.Controller
 		"#opps" : "oppsEl",
 		"#invoices": "invoicesEl"
 		"#login": "loginEl"
+		"#chatters": "chattersEl"
+
 	
 	set_button: (id) -> 
 		$("#header .buttons li").removeClass("active")
 		$("#" + id).addClass("active")
 
-		
 	constructor: ->
 		super
 	
@@ -51,13 +55,14 @@ class App extends Spine.Controller
 		
 		@invoices = new Invoices(el: @invoicesEl)
 		
+		@chatters = new Chatters(el: @chattersEl)
+		
 		new Spine.Manager(@clients, @products)
 		
-		new Spine.Manager(@login,@quotes, @invoices ,@opps)
+		new Spine.Manager(@login,@quotes, @invoices ,@opps,@chatters)
 						
 		$("#header img").hide()
-		
-						
+
 		@routes		
 			"/login/": ->
 				@set_button("no_btn")
@@ -86,6 +91,10 @@ class App extends Spine.Controller
 				@opps.active()
 				@clients.active()
 				@opps.render()
+				
+			"/view/chatter/": () ->
+				@set_button("btn_chatter")
+				@chatters.active()
 				
 		Spine.Route.setup()
 		

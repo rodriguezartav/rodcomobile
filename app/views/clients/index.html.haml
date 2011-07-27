@@ -52,6 +52,8 @@
 							%a{:href=>"#/view/pending/"} Pendientes
 						%li.button{:id=>"btn_history"}
 							%a{:href=>"#/view/history/"} Historico
+						%li.button{:id=>"btn_chatter"}
+							%a{:href=>"#/view/chatter/"} Chatter
 				#views
 						
 					#sideView
@@ -65,6 +67,7 @@
 							.list
 								.searchBox
 									%input{:id=> "txt_search_product" , :placeholder => "Search Products"}
+
 								%ul.search_items
 					#mainView				
 						#login.panel
@@ -124,4 +127,15 @@
 								%ul.selectedItems.history
 							.panel_footer
 								.buttons
+								
+						#chatters.panel
+							.panel_header
+								%span Enviar informacion sobre competitividad
+							.panel_content
+								%textarea{ :id => "chatter_post" , :placeholder=>"Informacion" }
+
+							.panel_footer
+								.buttons
+									%span.button{:"data-action" => "send"}
+										Enviar Informacion	
 				#footer

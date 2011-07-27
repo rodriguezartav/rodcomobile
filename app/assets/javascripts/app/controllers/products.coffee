@@ -1,20 +1,21 @@
 Product = require("models/product")
 Client = require("models/client")
 
-
 class Products extends Spine.Controller
+
 	events:
 		"click li": "select_product"
 		"change #txt_search_product": "render"
 
 	constructor: ->
 		super
-		Product.bind("refresh change", @render)
 		Product.bind("show", @show)
 		Product.bind("load_from_server", @load_from_server)
 
 	render: =>
 		query = @el.find('input').val()
+		#in_inventory = @in_inventory.val()
+		#alert in_inventory
 		if query.length > 0
 			list = Product.filter query
 			@el.find('.search_items').html require("views/products/list")(list)
